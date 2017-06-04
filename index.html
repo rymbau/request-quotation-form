@@ -19,22 +19,26 @@
     <![endif]-->
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="css/requestquotationformfont.css"/>
 </head>
 <body>
 <div class="container">
-    <div class="main">
+    <div class="main col-md-10 col-md-offset-1 well well-sm">
+        <div class="main-title">
+            <h1>Demande de devis</h1>
 
-        <h1 class="text-center">Demande de devis</h1>
-
-        <h2 class="text-center">Projet Développement Web</h2>
-
-        <div class="col-md-6 col-md-offset-3">
-            <form id="quotationForm" method="POST" class="form-horizontal">
+            <h2>Projet Développement Web</h2>
+        </div>
+        <div class="col-md-12">
+            <form id="quotationForm" method="POST" class="form-horizontal" v-on:submit.prevent="submitForm">
                 <div>
-                    <form-question v-for="question in questions" :question="question" :key="question.id">
-                    </form-question>
-                    <div class="form-group">
-                        <button class="btn btn-default btn-block" type="submit">Envoyer</button>
+                    <form-section v-for="section in sections" :section="section" :key="section.id">
+                    </form-section>
+
+                    <div class="section">
+                        <div class="form-group">
+                            <button class="btn btn-default btn-block btn-success" type="submit">ENVOYER</button>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -44,10 +48,12 @@
 
 <footer class="footer">
     <div class="container">
-        <p class="small text-right"><a href="http://www.glicer.com">Dev &amp; Rock 'n' roll © Glicer</a></p>
+        <a class="small" href="http://www.glicer.com">Dev &amp; Rock 'n' roll © Glicer</a>
     </div>
 </footer>
 
 <script src="js/vue.js"></script>
+<script src="js/vee-validate.js"></script>
+<script src="js/fr.js"></script>
 <script src="js/requestquotationform.js"></script>
 </body>
