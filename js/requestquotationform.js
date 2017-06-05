@@ -61,7 +61,7 @@ Vue.component('form-question', {
                 this.$options.template += '<form-input :question="question"></form-input>';
                 break;
             case 'input-file':
-                this.$options.template += '<div class="input"><label :for="question.id" class="control-label">'+
+                this.$options.template += '<div class="input"><label :for="question.id" class="control-label">' +
                     '<i :class="question.icon"></i> {{question.label}} </label>';
                 this.$options.template += '<form-input-file :question="question"></form-input-file></div>';
                 break;
@@ -109,17 +109,24 @@ var app = new Vue({
 
             var $sections = this.sections;
             $validator.validateAll(data).then(function () {
-                var form = [];
+                var formData = [];
                 $sections.forEach(function (section) {
                     section.questions.forEach(function (question) {
-                        form.push({
+                        formData.push({
                             id: question.id,
                             label: question.label,
                             answer: question.answer
                         })
                     });
                 });
-                console.log(JSON.stringify(form));
+                console.log(JSON.stringify(formData));
+
+                $this.$http.post('../php/send_mail.php', formData).then(function (response) {
+                    console.log(response.body);
+                }, function (response) {
+                    console.log('Error submit');
+                });
+
             }).catch(function (error) {
                     $this.$children.forEach(function (child) {
                         child.$children.forEach(function (child) {
@@ -131,6 +138,7 @@ var app = new Vue({
                         });
                     });
                     console.log('Invalid form. Error count : ' + $validator.getErrors().count());
+                    console.log(error);
                 });
         }
     }
