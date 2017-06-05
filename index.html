@@ -30,7 +30,8 @@
             <h2>Projet Développement Web</h2>
         </div>
         <div class="col-md-12">
-            <form id="quotationForm" method="POST" class="form-horizontal" v-on:submit.prevent="submitForm">
+            <form id="quotationForm" method="POST" class="form-horizontal" enctype="multipart/form-data"
+                  v-on:submit.prevent="submitForm">
                 <div>
                     <form-section v-for="section in sections" :section="section" :key="section.id">
                     </form-section>

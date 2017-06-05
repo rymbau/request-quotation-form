@@ -1,0 +1,52 @@
+{
+  "name": "requestquotationformfont",
+  "css_prefix_text": "icon-",
+  "css_use_suffix": false,
+  "hinting": true,
+  "units_per_em": 1000,
+  "ascent": 850,
+  "glyphs": [
+    {
+      "uid": "e75c54c282c0bf22186c5c7ec4b03eac",
+      "css": "target",
+      "code": 59395,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "937f4db8b6ff3348a1d9fcd5e12fd2fe",
+      "css": "mail",
+      "code": 59396,
+      "src": "iconic"
+    },
+    {
+      "uid": "86ee1fc7ff57e9c9c60d8a5e57183776",
+      "css": "user-1",
+      "code": 59397,
+      "src": "iconic"
+    },
+    {
+      "uid": "d3d5f318c8e9a58245c2e48c7ce0f57d",
+      "css": "tag-1",
+      "code": 59398,
+      "src": "iconic"
+    },
+    {
+      "uid": "b13a27d19dd739e29cbc7926085386d9",
+      "css": "folder",
+      "code": 59399,
+      "src": "iconic"
+    },
+    {
+      "uid": "cb35902d643e9e6ba8ba1cf739edef9a",
+      "css": "doc-inv",
+      "code": 59392,
+      "src": "iconic"
+    },
+    {
+      "uid": "74ae46b1527f71bad40a91762f4190ef",
+      "css": "target-1",
+      "code": 59393,
+      "src": "iconic"
+    }
+  ]
+}
