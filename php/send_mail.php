@@ -6,15 +6,15 @@ use Monolog\Handler\RotatingFileHandler;
 
 // create a log channel
 $log = new Logger('name');
-$log->pushHandler(new RotatingFileHandler('../../../log/request-quotation-form.log'));
+$log->pushHandler(new RotatingFileHandler('../../../log/request-quotation-form.log',7));    //keep logs 7 days
 
 $mail = new PHPMailer;
 
 $mail->isSMTP();
-$mail->Host       = $_SERVER['SMTP_HOST'];
+$mail->Host       = isset($_SERVER['SMTP_HOST']) ? $_SERVER['SMTP_HOST'] : getenv('SMTP_HOST');
+$mail->Username   = isset($_SERVER['SMTP_USERNAME']) ? $_SERVER['SMTP_USERNAME'] : getenv('SMTP_USERNAME');
+$mail->Password   = isset($_SERVER['SMTP_PASSWORD']) ? $_SERVER['SMTP_PASSWORD'] : getenv('SMTP_PASSWORD');
 $mail->SMTPAuth   = true;
-$mail->Username   = $_SERVER['SMTP_USERNAME'];
-$mail->Password   = $_SERVER['SMTP_PASSWORD'];
 $mail->SMTPSecure = 'ssl';
 $mail->Port       = 465;
 $mail->Timeout    = 10;
