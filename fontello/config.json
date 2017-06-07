@@ -7,12 +7,6 @@
   "ascent": 850,
   "glyphs": [
     {
-      "uid": "e75c54c282c0bf22186c5c7ec4b03eac",
-      "css": "target",
-      "code": 59395,
-      "src": "fontawesome"
-    },
-    {
       "uid": "937f4db8b6ff3348a1d9fcd5e12fd2fe",
       "css": "mail",
       "code": 59396,
@@ -46,6 +40,12 @@
       "uid": "74ae46b1527f71bad40a91762f4190ef",
       "css": "target-1",
       "code": 59393,
+      "src": "iconic"
+    },
+    {
+      "uid": "11e664deed5b2587456a4f9c01d720b6",
+      "css": "cancel",
+      "code": 59394,
       "src": "iconic"
     }
   ]

@@ -29,18 +29,25 @@ Vue.component('form-input', {
 
 Vue.component('form-input-file', {
     props: ['question'],
-    template: '<span class="btn btn-default btn-file">Parcourir ... ' +
-        '<input :id="question.id" :name="question.label" class="form-control" type="file" ' +
-        ':placeholder="question.placeholder" accept=".xls,image/*,.doc,.ppt,.txt,.pdf" hidden ' +
-        '@change="filesChange($event.target.files)"' +
-        '/></span>',
+    data: function () {
+        return {fileList: []};
+    },
+    template: '<div class="dropbox v-center">' +
+        '<input :id="question.id" :name="question.label" class="form-control input-file" type="file" ' +
+        ':placeholder="question.placeholder" accept=".xls,image/*,.doc,.ppt,.txt,.pdf" multiple ' +
+        'v-on:change="filesChange"/></span>' +
+        '<span v-show="!fileList.length">Déposez les fichier ici (txt, pdf, jpg, png, doc, ppt, xls)</span>' +
+        '<ol><li v-for="(file,index) in fileList">{{file.name}} <i v-on:click="fileCancel(index)" class="icon-cancel"></i></li></ol>' +
+        '</div>',
     methods: {
-        filesChange: function (fileList) {
-            if (!fileList.length) return;
-            console.log(fileList.length + " " + fileList[0].name);
-            this.question.answer = [
-                {'name': fileList[0].name, 'file': fileList[0]}
-            ];
+        filesChange: function (event) {
+            if (!event.target.files.length) return;
+            this.fileList = this.fileList.concat(Array.from(event.target.files));
+            console.log(this.fileList.length);
+        },
+        fileCancel: function (index) {
+            this.fileList.splice(index, 1);
+            console.log("index to remove " + index);
         }
     }
 });
@@ -107,26 +114,14 @@ var app = new Vue({
                 });
             });
 
-            var $sections = this.sections;
             $validator.validateAll(data).then(function () {
-                var formData = [];
-                $sections.forEach(function (section) {
-                    section.questions.forEach(function (question) {
-                        formData.push({
-                            id: question.id,
-                            label: question.label,
-                            answer: question.answer
-                        })
-                    });
-                });
-                console.log(JSON.stringify(formData));
+                var formData = new FormData($this.$el);
 
-                $this.$http.post('../php/send_mail.php', formData).then(function (response) {
+                $this.$http.post('php/send_mail.php', formData).then(function (response) {
                     console.log(response.body);
                 }, function (response) {
                     console.log('Error submit');
                 });
-
             }).catch(function (error) {
                     $this.$children.forEach(function (child) {
                         child.$children.forEach(function (child) {

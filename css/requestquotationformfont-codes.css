@@ -1,7 +1,7 @@
 
 .icon-doc-inv:before { content: '\e800'; } /* '' */
 .icon-target-1:before { content: '\e801'; } /* '' */
-.icon-target:before { content: '\e803'; } /* '' */
+.icon-cancel:before { content: '\e802'; } /* '' */
 .icon-mail:before { content: '\e804'; } /* '' */
 .icon-user-1:before { content: '\e805'; } /* '' */
 .icon-tag-1:before { content: '\e806'; } /* '' */
