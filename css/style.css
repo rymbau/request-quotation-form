@@ -158,6 +158,10 @@ h3 {
     margin: 0;
 }
 
+.input-file:focus {
+    outline: none;
+}
+
 .dropbox p {
     font-size: 1.2em;
     text-align: center;
@@ -165,7 +169,7 @@ h3 {
 }
 
 .dropbox .icon-cancel {
-    position: absolute;
+    position: relative;
 }
 
 .v-center {

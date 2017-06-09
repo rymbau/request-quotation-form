@@ -37,18 +37,32 @@ Vue.component('form-input-file', {
         '<div class="dropbox v-center">' +
         '<input :id="question.id" :name="question.label" class="form-control input-file" type="file" ' +
         ':placeholder="question.placeholder" accept=".xls,image/*,.doc,.ppt,.txt,.pdf" multiple ' +
-        'v-on:change="filesChange"/></span>' +
+        'v-on:change="filesChange" v-on:drop="filesDrop"/></span>' +
         '<span v-show="!fileList.length">Déposez les fichiers ici (txt, pdf, jpg, png, doc, ppt, xls)</span>' +
         '<ol><li v-for="(file,index) in fileList">{{file.name}} <i v-on:click="fileCancel(index)" class="icon-cancel"></i></li></ol>' +
         '</div></div>',
     methods: {
         filesChange: function (event) {
-            if (!event.target.files.length) return;
-            this.fileList = this.fileList.concat(Array.from(event.target.files));
+            event.preventDefault();
+            var files = event.target.files;
+            
+            if (!files.length) return;
+            // this.fileList = this.fileList.concat(Array.from(event.target.files));
+            for (var i = 0; i < files.length; i++) {
+                this.fileList.push(files[i]);
+            }
             app.$el.documents = this.fileList;
         },
         fileCancel: function (index) {
             this.fileList.splice(index, 1);
+            app.$el.documents = this.fileList;
+        },
+        filesDrop: function (event) {
+            event.preventDefault();
+            var files = event.dataTransfer.files;
+            for (var i = 0; i < files.length; i++) {
+                this.fileList.push(files[i]);
+            }
             app.$el.documents = this.fileList;
         }
     }
@@ -156,4 +170,8 @@ var app = new Vue({
     }
 });
 
+document.addEventListener("dragover", function(event) {
+    event.preventDefault();
+    event.stopPropagation();
+});
 
