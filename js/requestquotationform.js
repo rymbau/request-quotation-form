@@ -137,7 +137,7 @@ var app = new Vue({
                 var formData = new FormData($this.$el);
 
                 $this.$el.documents.forEach(function (file) {
-                    formData.append("Documents", file, file.name);
+                    formData.append("Documents[]", file, file.name);
                 });
 
                 $this.$http.post('php/send_mail.php', formData).then(function (response) {
