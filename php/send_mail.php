@@ -31,20 +31,23 @@ $mail->Body    = 'Description : ' . $_REQUEST['Description'] . '<br>Objectifs : 
 
 $log->warning(var_export($_FILES, true));
 
-$file = $_FILES["Documents"];
+$files = $_FILES["Documents"];
 
-$log->warning($file['error']);
+$attachmentFiles = [];
+foreach($files["error"] as $index => $error) {
+    $log->warning($error);
+    if ($error == UPLOAD_ERR_OK) {
+        $tmp_name = $files["tmp_name"][$index];
+        $name     = $files["name"][$index];
+        $log->warning($tmp_name . " " . file_exists($tmp_name) . " " . $name);
 
-$attachmentFile = null;
-if ($file['error'] == UPLOAD_ERR_OK) {
-    $tmp_name = $file["tmp_name"];
-    $name     = $file["name"];
-    $log->warning($tmp_name . " " . file_exists($tmp_name));
-
-    $attachmentFile = "../../../data/mail/$name";
-    move_uploaded_file($tmp_name, $attachmentFile);
-    $mail->addAttachment($attachmentFile);
-}
+        $attachmentFile = "../../../data/mail/$name";
+        move_uploaded_file($tmp_name, $attachmentFile);
+        $mail->addAttachment($attachmentFile);
+        
+        $attachmentFiles[] = $attachmentFile;
+    }
+} 
 
 if (!$mail->send()) {
     echo 'Message could not be sent.';
@@ -52,6 +55,6 @@ if (!$mail->send()) {
     echo 'Message has been sent.';
 }
 
-if ($attachmentFile) {
-    unlink($attachmentFile);
+foreach ($attachmentFiles as $filename) {
+    unlink($filename);
 }
