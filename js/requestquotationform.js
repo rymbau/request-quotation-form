@@ -32,22 +32,24 @@ Vue.component('form-input-file', {
     data: function () {
         return {fileList: []};
     },
-    template: '<div class="dropbox v-center">' +
+    template: '<div class="input"><label :for="question.id" class="control-label">' +
+        '<i :class="question.icon"></i> {{question.label}} </label>' +
+        '<div class="dropbox v-center">' +
         '<input :id="question.id" :name="question.label" class="form-control input-file" type="file" ' +
         ':placeholder="question.placeholder" accept=".xls,image/*,.doc,.ppt,.txt,.pdf" multiple ' +
         'v-on:change="filesChange"/></span>' +
-        '<span v-show="!fileList.length">Déposez les fichier ici (txt, pdf, jpg, png, doc, ppt, xls)</span>' +
+        '<span v-show="!fileList.length">Déposez les fichiers ici (txt, pdf, jpg, png, doc, ppt, xls)</span>' +
         '<ol><li v-for="(file,index) in fileList">{{file.name}} <i v-on:click="fileCancel(index)" class="icon-cancel"></i></li></ol>' +
-        '</div>',
+        '</div></div>',
     methods: {
         filesChange: function (event) {
             if (!event.target.files.length) return;
             this.fileList = this.fileList.concat(Array.from(event.target.files));
-            console.log(this.fileList.length);
+            app.$el.documents = this.fileList;
         },
         fileCancel: function (index) {
             this.fileList.splice(index, 1);
-            console.log("index to remove " + index);
+            app.$el.documents = this.fileList;
         }
     }
 });
@@ -68,9 +70,7 @@ Vue.component('form-question', {
                 this.$options.template += '<form-input :question="question"></form-input>';
                 break;
             case 'input-file':
-                this.$options.template += '<div class="input"><label :for="question.id" class="control-label">' +
-                    '<i :class="question.icon"></i> {{question.label}} </label>';
-                this.$options.template += '<form-input-file :question="question"></form-input-file></div>';
+                this.$options.template += '<form-input-file :question="question"></form-input-file>';
                 break;
             case 'textarea':
                 this.$options.template += '<form-textarea :question="question"></form-textarea>';
@@ -98,7 +98,9 @@ Vue.use(VeeValidate, config);
 var app = new Vue({
     el: '#quotationForm',
     data: {
-        sections: formParameters
+        sections: formParameters,
+        loading: false,
+        result: null
     },
     methods: {
         submitForm: function (event) {
@@ -115,13 +117,25 @@ var app = new Vue({
             });
 
             $validator.validateAll(data).then(function () {
+                $this.loading = true;
+                document.getElementById("7").disabled = true;
+
                 var formData = new FormData($this.$el);
+
+                $this.$el.documents.forEach(function (file) {
+                    formData.append("Documents", file, file.name);
+                });
 
                 $this.$http.post('php/send_mail.php', formData).then(function (response) {
                     console.log(response.body);
-                }, function (response) {
+                    $this.result = 'Message envoyé.';
+                },function (response) {
                     console.log('Error submit');
-                });
+                    $this.result = 'Une erreur est survenue.';
+                }).then(function () {
+                        $this.loading = false;
+                        document.getElementById("7").disabled = false;
+                    });
             }).catch(function (error) {
                     $this.$children.forEach(function (child) {
                         child.$children.forEach(function (child) {
@@ -134,6 +148,9 @@ var app = new Vue({
                     });
                     console.log('Invalid form. Error count : ' + $validator.getErrors().count());
                     console.log(error);
+                    $this.result = null;
+                    $this.loading = false;
+                    document.getElementById("7").disabled = false;
                 });
         }
     }

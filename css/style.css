@@ -70,14 +70,14 @@ h3 {
     box-shadow: 0 1px 0 0 #a94442;
 }
 
-.input.has-error .control-label {
-    color: #a94442;
-}
-
 .has-error .form-control:focus {
     border-bottom: 1px solid #a94442;
     -webkit-box-shadow: 0 1px 0 0 #a94442;
     box-shadow: 0 1px 0 0 #a94442;
+}
+
+.input.has-error .control-label {
+    color: #a94442;
 }
 
 .input input:focus ~ label,

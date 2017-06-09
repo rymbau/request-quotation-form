@@ -37,8 +37,12 @@
                     </form-section>
 
                     <div class="section">
-                        <div class="form-group">
-                            <button class="btn btn-default btn-block btn-success" type="submit">ENVOYER</button>
+                        <div class="form-group text-center">
+                            <span v-show="loading"><i class="icon-spin1 animate-spin"></i></span>
+                            <button v-show="!loading" class="btn btn-default btn-block btn-success" type="submit">ENVOYER</button>          
+                        </div>
+                        <div v-show="result" class="form-group">
+                            <div class="alert alert-warning" role="alert">{{result}}</div>
                         </div>
                     </div>
                 </div>

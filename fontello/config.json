@@ -47,6 +47,12 @@
       "css": "cancel",
       "code": 59394,
       "src": "iconic"
+    },
+    {
+      "uid": "72109d2fb3088d0e66ea6a9204297651",
+      "css": "spin1",
+      "code": 59440,
+      "src": "fontelico"
     }
   ]
 }
