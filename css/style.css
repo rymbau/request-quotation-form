@@ -168,8 +168,16 @@ h3 {
     padding: 50px 0;
 }
 
-.dropbox .icon-cancel {
+.icon-cancel {
     position: relative;
+}
+
+.has-error .dropbox {
+    outline: 1px dashed #a94442;
+}
+
+.has-error .dropbox + .help-block {
+    top: 15px;
 }
 
 .v-center {

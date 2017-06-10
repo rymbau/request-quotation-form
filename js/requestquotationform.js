@@ -30,40 +30,53 @@ Vue.component('form-input', {
 Vue.component('form-input-file', {
     props: ['question'],
     data: function () {
-        return {fileList: []};
+        return {fileList: [], fileValidate: false};
     },
-    template: '<div class="input"><label :for="question.id" class="control-label">' +
+    template: '<div class="input" :class="{\'has-error\':fileValidate}"><label :for="question.id" class="control-label">' +
         '<i :class="question.icon"></i> {{question.label}} </label>' +
-        '<div class="dropbox v-center">' +
+        '<div class="dropbox v-center"  >' +
         '<input :id="question.id" :name="question.label" class="form-control input-file" type="file" ' +
         ':placeholder="question.placeholder" accept=".xls,image/*,.doc,.ppt,.txt,.pdf" multiple ' +
-        'v-on:change="filesChange" v-on:drop="filesDrop"/></span>' +
+        ':class="{\'input\':true,\'has-error\':fileValidate}"  ' +
+        'v-on:change="filesChange($event,$event.target)" v-on:drop="filesChange($event,$event.dataTransfer)"/></span>' +
         '<span v-show="!fileList.length">Déposez les fichiers ici (txt, pdf, jpg, png, doc, ppt, xls)</span>' +
         '<ol><li v-for="(file,index) in fileList">{{file.name}} <i v-on:click="fileCancel(index)" class="icon-cancel"></i></li></ol>' +
-        '</div></div>',
+        '</div>' +
+        '<span v-show="fileValidate" class="small help-block">Fichier(s) non valide(s).</span></div>',
     methods: {
-        filesChange: function (event) {
+        filesChange: function (event, target) {
             event.preventDefault();
-            var files = event.target.files;
-            
+            var files = target.files;
+
             if (!files.length) return;
-            // this.fileList = this.fileList.concat(Array.from(event.target.files));
             for (var i = 0; i < files.length; i++) {
                 this.fileList.push(files[i]);
             }
             app.$el.documents = this.fileList;
+            this.filesValidate();
+            this.emit();
         },
         fileCancel: function (index) {
             this.fileList.splice(index, 1);
             app.$el.documents = this.fileList;
+            this.filesValidate();
+            this.emit();
         },
-        filesDrop: function (event) {
-            event.preventDefault();
-            var files = event.dataTransfer.files;
-            for (var i = 0; i < files.length; i++) {
-                this.fileList.push(files[i]);
+        filesValidate: function () {
+            var $this = this;
+            var regex = new RegExp("(.*?)\.(xls|png|jpg|doc|ppt|txt|pdf)$");
+            for (var i = 0; i < $this.fileList.length; i++) {
+                var ext = $this.fileList[i].name.toLowerCase();
+                if (!(regex.test(ext))) {
+                    $this.fileValidate = true;
+                    return $this.fileValidate;
+                }
             }
-            app.$el.documents = this.fileList;
+            this.fileValidate = false;
+            return this.fileValidate;
+        },
+        emit: function () {
+            app.upload = this.fileValidate;
         }
     }
 });
@@ -114,7 +127,11 @@ var app = new Vue({
     data: {
         sections: formParameters,
         loading: false,
-        result: null
+        result: null,
+        upload: false
+    },
+    mounted: function () {
+        this.$el.documents = [];
     },
     methods: {
         submitForm: function (event) {
@@ -131,25 +148,27 @@ var app = new Vue({
             });
 
             $validator.validateAll(data).then(function () {
-                $this.loading = true;
-                document.getElementById("7").disabled = true;
+                if (!$this.upload) {
+                    $this.loading = true;
+                    document.getElementById("7").disabled = true;
 
-                var formData = new FormData($this.$el);
+                    var formData = new FormData($this.$el);
 
-                $this.$el.documents.forEach(function (file) {
-                    formData.append("Documents[]", file, file.name);
-                });
-
-                $this.$http.post('php/send_mail.php', formData).then(function (response) {
-                    console.log(response.body);
-                    $this.result = 'Message envoyé.';
-                },function (response) {
-                    console.log('Error submit');
-                    $this.result = 'Une erreur est survenue.';
-                }).then(function () {
-                        $this.loading = false;
-                        document.getElementById("7").disabled = false;
+                    $this.$el.documents.forEach(function (file) {
+                        formData.append("Documents[]", file, file.name);
                     });
+
+                    $this.$http.post('php/send_mail.php', formData).then(function (response) {
+                        console.log(response.body);
+                        $this.result = 'Message envoyé.';
+                    },function (response) {
+                        console.log('Error submit');
+                        $this.result = 'Une erreur est survenue.';
+                    }).then(function () {
+                            $this.loading = false;
+                            document.getElementById("7").disabled = false;
+                        });
+                }
             }).catch(function (error) {
                     $this.$children.forEach(function (child) {
                         child.$children.forEach(function (child) {
@@ -170,7 +189,7 @@ var app = new Vue({
     }
 });
 
-document.addEventListener("dragover", function(event) {
+document.addEventListener("dragover", function (event) {
     event.preventDefault();
     event.stopPropagation();
 });
