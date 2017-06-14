@@ -1,12 +1,12 @@
 var formParameters = [
     {id: 'sct1', title: 'Contact', questions: [
-        {id: 1, label: 'Nom', control: 'input', placeholder: 'Nom Prénom', validate: 'required|alpha|min:2', icon: "icon-user-1" },
-        {id: 2, label: 'E-mail', control: 'input', placeholder: 'spongebob@exemple.fr', validate: 'required|email', icon: "icon-mail"}
+        {id: 1, label: 'Nom', control: 'input', placeholder: 'Nom Prénom', validate: 'required|alpha|min:2', icon: "icon-user-1", answer: '' },
+        {id: 2, label: 'E-mail', control: 'input', placeholder: 'spongebob@exemple.fr', validate: 'required|email', icon: "icon-mail", answer: ''}
     ]},
     {id: 'sect2', title: 'Projet', questions: [
-        {id: 3, label: 'Intitulé', control: 'input', placeholder: 'titre', validate: 'required|min:2', icon: "icon-tag-1"},
-        {id: 4, label: 'Description', control: 'textarea', placeholder: 'secteur d\'activité, technologies, ...', validate: 'required|min:2', icon: "icon-doc-inv"},
-        {id: 5, label: 'Objectifs', control: 'textarea', placeholder: 'liste des objectifs', validate: 'required|min:2', icon: "icon-target-1"},
+        {id: 3, label: 'Intitulé', control: 'input', placeholder: 'titre', validate: 'required|min:2', icon: "icon-tag-1", answer: ''},
+        {id: 4, label: 'Description', control: 'textarea', placeholder: 'secteur d\'activité, technologies, ...', validate: 'required|min:2', icon: "icon-doc-inv", answer: ''},
+        {id: 5, label: 'Objectifs', control: 'textarea', placeholder: 'liste des objectifs', validate: 'required|min:2', icon: "icon-target-1", answer: ''},
         {id: 7, label: 'Documents', control: 'input-file', icon: "icon-folder"}
     ]}
 ];
@@ -30,21 +30,25 @@ Vue.component('form-input', {
 Vue.component('form-input-file', {
     props: ['question'],
     data: function () {
-        return {fileList: [], fileValidate: false};
+        return {fileList: [], uploadError: false};
     },
-    template: '<div class="input" :class="{\'has-error\':fileValidate}"><label :for="question.id" class="control-label">' +
+    created: function () {
+        bus.$on('reset', this.fileReset);
+        bus.$on('submit', this.fileDisable);
+    },
+    template: '<div class="input" :class="{\'has-error\':uploadError}"><label :for="question.id" class="control-label">' +
         '<i :class="question.icon"></i> {{question.label}} </label>' +
         '<div class="dropbox v-center"  >' +
         '<input :id="question.id" :name="question.label" class="form-control input-file" type="file" ' +
         ':placeholder="question.placeholder" accept=".xls,image/*,.doc,.ppt,.txt,.pdf" multiple ' +
-        ':class="{\'input\':true,\'has-error\':fileValidate}"  ' +
-        'v-on:change="filesChange($event,$event.target)" v-on:drop="filesChange($event,$event.dataTransfer)"/></span>' +
+        ':class="{\'input\':true,\'has-error\':uploadError}"  ref="inputfile" ' +
+        'v-on:change="fileChange($event,$event.target)" v-on:drop="fileChange($event,$event.dataTransfer)"/></span>' +
         '<span v-show="!fileList.length">Déposez les fichiers ici (txt, pdf, jpg, png, doc, ppt, xls)</span>' +
         '<ol><li v-for="(file,index) in fileList">{{file.name}} <i v-on:click="fileCancel(index)" class="icon-cancel"></i></li></ol>' +
         '</div>' +
-        '<span v-show="fileValidate" class="small help-block">Fichier(s) non valide(s).</span></div>',
+        '<span v-show="uploadError" class="small help-block">Fichier(s) non valide(s).</span></div>',
     methods: {
-        filesChange: function (event, target) {
+        fileChange: function (event, target) {
             event.preventDefault();
             var files = target.files;
 
@@ -52,31 +56,37 @@ Vue.component('form-input-file', {
             for (var i = 0; i < files.length; i++) {
                 this.fileList.push(files[i]);
             }
-            app.$el.documents = this.fileList;
-            this.filesValidate();
-            this.emit();
         },
         fileCancel: function (index) {
             this.fileList.splice(index, 1);
-            app.$el.documents = this.fileList;
-            this.filesValidate();
-            this.emit();
         },
-        filesValidate: function () {
+        fileValidate: function () {
             var $this = this;
             var regex = new RegExp("(.*?)\.(xls|png|jpg|doc|ppt|txt|pdf)$");
             for (var i = 0; i < $this.fileList.length; i++) {
                 var ext = $this.fileList[i].name.toLowerCase();
                 if (!(regex.test(ext))) {
-                    $this.fileValidate = true;
-                    return $this.fileValidate;
+                    $this.uploadError = true;
+                    return $this.uploadError;
                 }
             }
-            this.fileValidate = false;
-            return this.fileValidate;
+            this.uploadError = false;
+            return this.uploadError;
         },
-        emit: function () {
-            app.upload = this.fileValidate;
+        fileReset: function () {
+            this.fileList = [];
+        },
+        fileDisable: function (disable) {
+            this.$refs.inputfile.disabled = disable;
+        }
+    },
+    watch: {
+        'fileList': function () {
+            this.fileValidate();
+            bus.$emit('updateUploadFiles', this.fileList);
+        },
+        'uploadError': function () {
+            bus.$emit('updateUploadValidate', this.uploadError);
         }
     }
 });
@@ -122,19 +132,36 @@ const config = {
 
 Vue.use(VeeValidate, config);
 
+var bus = new Vue();
+
 var app = new Vue({
     el: '#quotationForm',
     data: {
         sections: formParameters,
         loading: false,
         result: null,
-        upload: false
+        upload: false,
+        uploadFiles: []
     },
-    mounted: function () {
-        this.$el.documents = [];
+    created: function () {
+        bus.$on('updateUploadFiles', function (fileList) {
+            app.uploadFiles = fileList;
+        });
+        bus.$on('updateUploadValidate', function (uploadError) {
+            app.upload = !uploadError;
+        })
     },
     methods: {
+        reset: function () {
+            this.sections.forEach(function (section) {
+                section.questions.forEach(function (question) {
+                    if (question.answer) question.answer = '';
+                });
+            });
+            bus.$emit('reset');
+        },
         submitForm: function (event) {
+            event.preventDefault();
             var $this = this;
             var $validator = this.$validator;
             var data = {};
@@ -148,25 +175,27 @@ var app = new Vue({
             });
 
             $validator.validateAll(data).then(function () {
-                if (!$this.upload) {
+                if ($this.upload) {
                     $this.loading = true;
-                    document.getElementById("7").disabled = true;
+                    bus.$emit('submit', true);
 
                     var formData = new FormData($this.$el);
 
-                    $this.$el.documents.forEach(function (file) {
+                    $this.uploadFiles.forEach(function (file) {
                         formData.append("Documents[]", file, file.name);
                     });
 
                     $this.$http.post('php/send_mail.php', formData).then(function (response) {
                         console.log(response.body);
                         $this.result = 'Message envoyé.';
+                        $this.reset();
+                        this.errors.clear();
                     },function (response) {
-                        console.log('Error submit');
+                        console.log('Error submit ');
                         $this.result = 'Une erreur est survenue.';
                     }).then(function () {
                             $this.loading = false;
-                            document.getElementById("7").disabled = false;
+                            bus.$emit('submit', false);
                         });
                 }
             }).catch(function (error) {
@@ -179,17 +208,16 @@ var app = new Vue({
                             });
                         });
                     });
-                    console.log('Invalid form. Error count : ' + $validator.getErrors().count());
                     console.log(error);
-                    $this.result = null;
+                    $this.result = ($validator.getErrors().count()) ? 'Erreur de validation du formulaire.' : 'Une erreur est survenue.';
                     $this.loading = false;
-                    document.getElementById("7").disabled = false;
+                    bus.$emit('submit', false);
                 });
         }
     }
 });
 
-document.addEventListener("dragover", function (event) {
+document.addEventListener('dragover', function (event) {
     event.preventDefault();
     event.stopPropagation();
 });

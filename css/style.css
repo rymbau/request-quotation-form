@@ -145,6 +145,12 @@ h3 {
     text-align: center;
 }
 
+.form-control.input-file[disabled], 
+.form-control.input-file[readonly], 
+fieldset[disabled] .form-control.input-file {
+    opacity: 0;
+}
+
 .input-file {
     position: absolute;
     cursor: pointer;
