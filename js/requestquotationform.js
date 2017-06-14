@@ -140,7 +140,7 @@ var app = new Vue({
         sections: formParameters,
         loading: false,
         result: null,
-        upload: false,
+        upload: true,
         uploadFiles: []
     },
     created: function () {
