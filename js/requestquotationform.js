@@ -1,13 +1,13 @@
 var formParameters = [
-    {id: 'sct1', title: 'Contact', questions: [
-        {id: 1, label: 'Nom', control: 'input', placeholder: 'Nom Prénom', validate: 'required|alpha|min:2', icon: "icon-user-1", answer: '' },
-        {id: 2, label: 'E-mail', control: 'input', placeholder: 'spongebob@exemple.fr', validate: 'required|email', icon: "icon-mail", answer: ''}
+    {id: 'sect1', title: 'Contact', questions: [
+        {id: 1, label: 'Nom', control: 'input', placeholder: 'Nom Prénom', validate: 'required|alpha|min:2', icon: 'icon-user-1', answer: ''},
+        {id: 2, label: 'E-mail', control: 'input', placeholder: 'spongebob@exemple.fr', validate: 'required|email', icon: 'icon-mail', answer: ''}
     ]},
     {id: 'sect2', title: 'Projet', questions: [
         {id: 3, label: 'Intitulé', control: 'input', placeholder: 'titre', validate: 'required|min:2', icon: "icon-tag-1", answer: ''},
-        {id: 4, label: 'Description', control: 'textarea', placeholder: 'secteur d\'activité, technologies, ...', validate: 'required|min:2', icon: "icon-doc-inv", answer: ''},
-        {id: 5, label: 'Objectifs', control: 'textarea', placeholder: 'liste des objectifs', validate: 'required|min:2', icon: "icon-target-1", answer: ''},
-        {id: 7, label: 'Documents', control: 'input-file', icon: "icon-folder"}
+        {id: 4, label: 'Description', control: 'textarea', placeholder: 'secteur d\'activité, technologies, ...', validate: 'required|min:2', icon: 'icon-doc-inv', answer: ''},
+        {id: 5, label: 'Objectifs', control: 'textarea', placeholder: 'liste des objectifs', validate: 'required|min:2', icon: 'icon-target-1', answer: ''},
+        {id: 7, label: 'Documents', control: 'input-file', icon: 'icon-folder'}
     ]}
 ];
 
@@ -21,10 +21,22 @@ function questionTemplate(customField) {
 
 Vue.component('form-input', {
     props: ['question'],
-    template: questionTemplate('<input :id="question.id" :name="question.label" ' +
+    template: questionTemplate('<input :id="question.id" :name="question.label" ref="input" ' +
         ':class="{\'input\':true,\'has-error\':errors.has(question.label)}" ' +
         'class="form-control" type="text" ' +
-        'v-model="question.answer" :placeholder="question.placeholder" v-validate="question.validate" />')
+        'v-model="question.answer" :placeholder="question.placeholder" v-validate="question.validate" />'),
+    mounted: function () {
+        bus.$on('reset', this.reset);
+    },
+    methods: {
+        reset: function () {
+            var $this = this;
+            $this.question.answer = '';
+            setTimeout(function () {
+                $this.errors.clear();
+            }, 100);
+        }
+    }
 });
 
 Vue.component('form-input-file', {
@@ -75,6 +87,7 @@ Vue.component('form-input-file', {
         },
         fileReset: function () {
             this.fileList = [];
+            this.uploadError = false;
         },
         fileDisable: function (disable) {
             this.$refs.inputfile.disabled = disable;
@@ -95,7 +108,19 @@ Vue.component('form-textarea', {
     props: ['question'],
     template: questionTemplate('<textarea :id="question.id" :name="question.label" class="form-control" ' +
         ':class="{\'input\':true,\'has-error\':errors.has(question.label)}" ' +
-        'v-model="question.answer" :placeholder="question.placeholder" v-validate="question.validate" />')
+        'v-model="question.answer" :placeholder="question.placeholder" v-validate="question.validate" />'),
+    mounted: function () {
+        bus.$on('reset', this.reset);
+    },
+    methods: {
+        reset: function () {
+            var $this = this;
+            $this.question.answer = '';
+            setTimeout(function () {
+                $this.errors.clear();
+            }, 100);
+        }
+    }
 });
 
 Vue.component('form-question', {
@@ -149,15 +174,15 @@ var app = new Vue({
         });
         bus.$on('updateUploadValidate', function (uploadError) {
             app.upload = !uploadError;
-        })
+        });
+
+    },
+    mounted: function () {
+        this.reset();
     },
     methods: {
         reset: function () {
-            this.sections.forEach(function (section) {
-                section.questions.forEach(function (question) {
-                    if (question.answer) question.answer = '';
-                });
-            });
+            this.errors.clear();
             bus.$emit('reset');
         },
         submitForm: function (event) {
@@ -189,7 +214,6 @@ var app = new Vue({
                         console.log(response.body);
                         $this.result = 'Message envoyé.';
                         $this.reset();
-                        this.errors.clear();
                     },function (response) {
                         console.log('Error submit ');
                         $this.result = 'Une erreur est survenue.';
@@ -221,4 +245,3 @@ document.addEventListener('dragover', function (event) {
     event.preventDefault();
     event.stopPropagation();
 });
-
