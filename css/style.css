@@ -146,8 +146,8 @@ h3 {
     width: 100%;
 }
 
-.form-control.input-file[disabled], 
-.form-control.input-file[readonly], 
+.form-control.input-file[disabled],
+.form-control.input-file[readonly],
 fieldset[disabled] .form-control.input-file {
     opacity: 0;
 }
@@ -226,3 +226,17 @@ fieldset[disabled] .form-control.input-file {
 }
 
 /***********************************/
+
+@media screen and (max-width: 767px) {
+    .main {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    h2 {
+        font-size: 1.6em;
+    }
+}
