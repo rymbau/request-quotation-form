@@ -143,6 +143,7 @@ h3 {
     position: relative;
     cursor: pointer;
     text-align: center;
+    width: 100%;
 }
 
 .form-control.input-file[disabled], 
@@ -174,6 +175,22 @@ fieldset[disabled] .form-control.input-file {
     padding: 50px 0;
 }
 
+.dropbox ol {
+    padding-left: 0;
+    width: 100%;
+}
+
+.dropbox ol li {
+    display: flex;
+    justify-content: center;
+}
+
+.dropbox ol li span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+}
+
 .icon-cancel {
     position: relative;
 }
@@ -189,7 +206,6 @@ fieldset[disabled] .form-control.input-file {
 .v-center {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
 }
 

@@ -62,7 +62,7 @@ Vue.component('form-input-file', {
         ':class="{\'input\':true,\'has-error\':uploadError}"  ref="inputfile" ' +
         'v-on:change="fileChange($event,$event.target)" v-on:drop="fileChange($event,$event.dataTransfer)"/></span>' +
         '<span v-show="!fileList.length">Déposez les fichiers ici (txt, pdf, jpg, png, doc, ppt, xls)</span>' +
-        '<ol><li v-for="(file,index) in fileList">{{file.name}} <i v-on:click="fileCancel(index)" class="icon-cancel"></i></li></ol>' +
+        '<ol class="list-unstyled"><li v-for="(file,index) in fileList"><span>{{file.name}}</span> <i v-on:click="fileCancel(index)" class="icon-cancel"></i></li></ol>' +
         '</div>' +
         '<span v-show="uploadError" class="small help-block">Fichier(s) non valide(s).</span></div>',
     methods: {
