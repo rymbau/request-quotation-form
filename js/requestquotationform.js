@@ -27,6 +27,7 @@ Vue.component('form-input', {
         'v-model="question.answer" :placeholder="question.placeholder" v-validate="question.validate" />'),
     mounted: function () {
         bus.$on('reset', this.reset);
+        bus.$on('validate', this.validate);
     },
     methods: {
         reset: function () {
@@ -35,6 +36,11 @@ Vue.component('form-input', {
             setTimeout(function () {
                 $this.errors.clear();
             }, 100);
+        },
+        validate: function () {
+            this.$validator.validateAll().then(function () {
+            }).catch(function () {
+                });
         }
     }
 });
@@ -111,6 +117,7 @@ Vue.component('form-textarea', {
         'v-model="question.answer" :placeholder="question.placeholder" v-validate="question.validate" />'),
     mounted: function () {
         bus.$on('reset', this.reset);
+        bus.$on('validate', this.validate);
     },
     methods: {
         reset: function () {
@@ -119,6 +126,11 @@ Vue.component('form-textarea', {
             setTimeout(function () {
                 $this.errors.clear();
             }, 100);
+        },
+        validate: function () {
+            this.$validator.validateAll().then(function () {
+            }).catch(function () {
+                });
         }
     }
 });
@@ -223,15 +235,7 @@ var app = new Vue({
                         });
                 }
             }).catch(function (error) {
-                    $this.$children.forEach(function (child) {
-                        child.$children.forEach(function (child) {
-                            child.$children.forEach(function (child) {
-                                child.$validator.validateAll().then(function () {
-                                }).catch(function () {
-                                    });
-                            });
-                        });
-                    });
+                    bus.$emit('validate');
                     console.log(error);
                     $this.result = ($validator.getErrors().count()) ? 'Erreur de validation du formulaire.' : 'Une erreur est survenue.';
                     $this.loading = false;
