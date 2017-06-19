@@ -163,6 +163,17 @@ Vue.component('form-section', {
     }
 });
 
+Vue.component('form-submit', {
+    props: ['loading', 'result'],
+    template: '<div class="section">' +
+        '<div class="form-group text-center">' +
+        '<span v-show="loading"><i class="icon-spin1 animate-spin"></i></span>' +
+        '<button v-show="!loading" class="btn btn-default btn-block btn-success" type="submit">ENVOYER</button>' +
+        '</div>' +
+        '<div v-show="result" class="form-group"><div class="alert alert-warning" role="alert">{{result}}</div></div>' +
+        '</div>'
+});
+
 const config = {
     locale: 'fr'
 };
@@ -178,7 +189,8 @@ var app = new Vue({
         loading: false,
         result: null,
         upload: true,
-        uploadFiles: []
+        uploadFiles: [],
+        show: false
     },
     created: function () {
         bus.$on('updateUploadFiles', function (fileList) {
@@ -187,10 +199,10 @@ var app = new Vue({
         bus.$on('updateUploadValidate', function (uploadError) {
             app.upload = !uploadError;
         });
-
     },
     mounted: function () {
         this.reset();
+        this.show = true;
     },
     methods: {
         reset: function () {

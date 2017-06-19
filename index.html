@@ -34,18 +34,13 @@
             <form id="quotationForm" method="POST" class="form-horizontal" enctype="multipart/form-data"
                   v-on:submit.prevent="submitForm">
                 <div>
-                    <form-section  v-for="section in sections" :section="section" :key="section.id">
-                    </form-section>
-
-                    <div class="section">
-                        <div class="form-group text-center">
-                            <span v-show="loading"><i class="icon-spin1 animate-spin"></i></span>
-                            <button v-show="!loading" class="btn btn-default btn-block btn-success" type="submit">ENVOYER</button>          
-                        </div>
-                        <div v-show="result" class="form-group">
-                            <div class="alert alert-warning" role="alert">{{result}}</div>
-                        </div>
-                    </div>
+                    <transition-group name="fade">
+                        <form-section v-for="section in sections" :section="section" :key="section.id" v-if="show">
+                        </form-section>
+                    </transition-group>
+                    <transition name="fade">
+                        <form-submit v-if="show" :loading="loading" :result="result"></form-submit>
+                    </transition>
                 </div>
             </form>
         </div>

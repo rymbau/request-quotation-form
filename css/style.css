@@ -211,6 +211,16 @@ fieldset[disabled] .form-control.input-file {
 
 /***********************************/
 
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s
+}
+
+.fade-enter, .fade-leave-to {
+    opacity: 0
+}
+
+/***********************************/
+
 .footer {
     font-family: Consolas, Verdana, Arial, sans-serif;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
