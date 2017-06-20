@@ -16,6 +16,10 @@ a, .btn, img {
     -moz-transition: all ease-in .4s;
 }
 
+#app {
+    min-height: 100vh;
+}
+
 .main {
     padding: 60px;
 }
@@ -212,7 +216,7 @@ fieldset[disabled] .form-control.input-file {
 /***********************************/
 
 .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s
+    transition: opacity 1s
 }
 
 .fade-enter, .fade-leave-to {

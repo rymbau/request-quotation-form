@@ -174,35 +174,32 @@ Vue.component('form-submit', {
         '</div>'
 });
 
-const config = {
-    locale: 'fr'
-};
 
-Vue.use(VeeValidate, config);
-
-var bus = new Vue();
-
-var app = new Vue({
-    el: '#quotationForm',
-    data: {
-        sections: formParameters,
-        loading: false,
-        result: null,
-        upload: true,
-        uploadFiles: [],
-        show: false
+Vue.component('form-component', {
+    data: function () {
+        return {
+            sections: formParameters,
+            loading: false,
+            result: null,
+            upload: true,
+            uploadFiles: []
+        }
     },
+    template: '<form id="quotationForm" method="POST" class="form-horizontal" enctype="multipart/form-data" v-on:submit.prevent="submitForm">' +
+        '<form-section v-for="section in sections" :section="section" :key="section.id"></form-section>' +
+        '<form-submit :loading="loading" :result="result"></form-submit>' +
+        '</form>',
     created: function () {
+        var $this = this;
         bus.$on('updateUploadFiles', function (fileList) {
-            app.uploadFiles = fileList;
+            $this.uploadFiles = fileList;
         });
         bus.$on('updateUploadValidate', function (uploadError) {
-            app.upload = !uploadError;
+            $this.upload = !uploadError;
         });
     },
     mounted: function () {
         this.reset();
-        this.show = true;
     },
     methods: {
         reset: function () {
@@ -254,6 +251,33 @@ var app = new Vue({
                     bus.$emit('submit', false);
                 });
         }
+    }
+
+});
+
+const config = {
+    locale: 'fr'
+};
+
+Vue.use(VeeValidate, config);
+
+var bus = new Vue();
+
+var app = new Vue({
+    el: '#app',
+    data: {
+        show: false
+    },
+    template: '<transition name="fade">' +
+        '<div class="main col-md-10 col-md-offset-1 well well-sm" v-if="show">' +
+        '<div class="main-title">' +
+        '<h1>Demande de devis</h1>' +
+        '<h2>Projet Développement Web</h2>' +
+        '</div>' +
+        '<div class="col-md-12"><form-component></form-component></div></div>' +
+        '</transition>',
+    mounted: function () {
+        this.show = true;
     }
 });
 
