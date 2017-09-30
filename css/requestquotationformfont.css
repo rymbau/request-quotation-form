@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'requestquotationformfont';
-  src: url('../font/requestquotationformfont.eot?86557571');
-  src: url('../font/requestquotationformfont.eot?86557571#iefix') format('embedded-opentype'),
-       url('../font/requestquotationformfont.woff2?86557571') format('woff2'),
-       url('../font/requestquotationformfont.woff?86557571') format('woff'),
-       url('../font/requestquotationformfont.ttf?86557571') format('truetype'),
-       url('../font/requestquotationformfont.svg?86557571#requestquotationformfont') format('svg');
+  src: url('../font/requestquotationformfont.eot?33829125');
+  src: url('../font/requestquotationformfont.eot?33829125#iefix') format('embedded-opentype'),
+       url('../font/requestquotationformfont.woff2?33829125') format('woff2'),
+       url('../font/requestquotationformfont.woff?33829125') format('woff'),
+       url('../font/requestquotationformfont.ttf?33829125') format('truetype'),
+       url('../font/requestquotationformfont.svg?33829125#requestquotationformfont') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'requestquotationformfont';
-    src: url('../font/requestquotationformfont.svg?86557571#requestquotationformfont') format('svg');
+    src: url('../font/requestquotationformfont.svg?33829125#requestquotationformfont') format('svg');
   }
 }
 */
@@ -63,3 +63,4 @@
 .icon-tag-1:before { content: '\e806'; } /* '' */
 .icon-folder:before { content: '\e807'; } /* '' */
 .icon-spin1:before { content: '\e830'; } /* '' */
+.icon-hand-peace-o:before { content: '\f25b'; } /* '' */
